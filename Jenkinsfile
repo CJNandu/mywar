@@ -7,7 +7,7 @@ pipeline
         {
             steps
             {
-                git 'https://github.com/intelliqittrainings/maven.git'
+                git 'https://github.com/CJNandu/mywar.git'
             }
         }
         stage('ContinuousBuild')
@@ -21,37 +21,24 @@ pipeline
         {
             steps
             {
-               deploy adapters: [tomcat9(credentialsId: 'bfb67f1d-2f4e-430c-bb8d-30584116bd00', path: '', url: 'http://172.31.51.212:9090')], contextPath: 'test1', war: '**/*.war'
+                deploy adapters: [tomcat9(credentialsId: 'b7dd447d-e90e-41de-8aed-5f01b63f3794', path: '', url: 'http://172.31.80.58:8080')], contextPath: 'testapp2', war: '**/*.war'
             }
         }
         stage('ContinuousTesting')
         {
             steps
             {
-               git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
-               sh 'java -jar /home/ubuntu/.jenkins/workspace/DeclarativePipeline1/testing.jar'
+                git 'https://github.com/intelliqittrainings/FunctionalTesting.git'
+                
+                sh 'java -jar /var/lib/jenkins/workspace/dev2/testing.jar'
             }
         }
-       
-    }
-    
-    post
-    {
-        success
+        stage('ContinuousDelivary')
         {
-            input message: 'Need approval from the DM!', submitter: 'srinivas'
-               deploy adapters: [tomcat9(credentialsId: 'bfb67f1d-2f4e-430c-bb8d-30584116bd00', path: '', url: 'http://172.31.50.204:9090')], contextPath: 'prod1', war: '**/*.war'
+            steps
+            {
+                deploy adapters: [tomcat9(credentialsId: 'b7dd447d-e90e-41de-8aed-5f01b63f3794', path: '', url: 'http://172.31.88.198:8080')], contextPath: 'prodapp2', war: '**/*.war'
+            }
         }
-        failure
-        {
-            mail bcc: '', body: 'Continuous Integration has failed', cc: '', from: '', replyTo: '', subject: 'CI Failed', to: 'selenium.saikrishna@gmail.com'
-        }
-       
     }
-    
-    
-    
-    
-    
-    
 }
